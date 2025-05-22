@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from streamlit_autorefresh import st_autorefresh
 
 st_autorefresh(interval=30000, key="refresh")  # Auto-refresh every 30 seconds
-
+st.title("FLOOR 3")
 # URL of your published Google Sheet as CSV
 csv_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSnU2GckOZBJrCWK5iejVKBzQ2ZfCcbVd5qGFNN24soM-ZA6kWl7gxe7XTOPJPnW-eNA92k3b-zWNN-/pub?output=csv"
 
