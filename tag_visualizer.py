@@ -40,7 +40,7 @@ origin_positions = {
     "Floor 4": (196, 93)
 }
 # Load image and get size
-bg_img = mpimg.imread(image_paths[floor])
+bg_img = mpimg.imread(floor_bg_images[floor])
 height, width = bg_img.shape[0], bg_img.shape[1]
 
 # Get the anchor pixel that should be treated as (0,0)
