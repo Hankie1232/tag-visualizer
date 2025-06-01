@@ -44,7 +44,7 @@ bg_img = np.rot90(bg_img, 2)  # rotate 180 degrees for all floors
 floor_extents = {
     "Floor 2": [-22, 28, -10, 35],
     "Floor 3": [-22, 28, -10, 35],
-    "Floor 4": [-29, 18, -8, 37] 
+    "Floor 4": [-29, 18, -8, 30] 
 }
 extent = floor_extents[floor]
 
