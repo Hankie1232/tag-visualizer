@@ -127,7 +127,7 @@ num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100,
 
 # Plot setup
 fig, ax = plt.subplots()
-# Plot the background image
+ax.invert_xaxis()
 ax.imshow(bg_img, extent=extent, origin="lower", zorder=0)
 ax.set_xlim(extent[0], extent[1])
 ax.set_ylim(extent[2], extent[3])
