@@ -90,7 +90,7 @@ anchor2_real_coords = {
 
 anchor3_pixel_positions = {
     "Floor 2": (101, 125),
-    "Floor 3": (117, 99)
+    "Floor 3": (117, 101)
 }
 
 anchor3_real_coords = {
