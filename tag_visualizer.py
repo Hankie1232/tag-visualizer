@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from streamlit_autorefresh import st_autorefresh
 import matplotlib.image as mpimg
+import numpy as np
 
 # Auto-refresh every 5 seconds (5000 ms)
 st_autorefresh(interval=5000, key="refresh")
