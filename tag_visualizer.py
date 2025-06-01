@@ -34,7 +34,7 @@ tags_to_show = st.multiselect(
 )
 
 # Dropdown: Select how many latest positions to show (with 1 included)
-num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100], index=1)
+num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100, 500], index=1)
 
 # Plot setup
 fig, ax = plt.subplots()
