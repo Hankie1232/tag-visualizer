@@ -49,8 +49,6 @@ origin_x, origin_y = origin_positions[floor]
 # Calculate extent to shift the image so anchor aligns to (0,0)
 extent = [-origin_x, width - origin_x, -origin_y, height - origin_y]
 
-# Plot the background image
-ax.imshow(bg_img, extent=extent, origin="lower", zorder=0)
 
 # Multi-select dropdown to choose which tags to show
 tags_to_show = st.multiselect(
@@ -64,7 +62,8 @@ num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100,
 
 # Plot setup
 fig, ax = plt.subplots()
-ax.imshow(bg_img, extent=extent, origin='upper', zorder=0)
+# Plot the background image
+ax.imshow(bg_img, extent=extent, origin="lower", zorder=0)
 ax.set_xlim(extent[0], extent[1])
 ax.set_ylim(extent[2], extent[3])
 ax.set_title(f"{floor.upper()} - Tag Positions")
