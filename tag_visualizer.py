@@ -50,7 +50,7 @@ anchor2_pixel_positions = {
 anchor2_real_coords = {
     "Floor 2": (15.02, 14.97),
     "Floor 3": (16.41, 0.01),
-    "Floor 4": (6.1, 6.91)
+    "Floor 4": (12.12, 6.91)
 }
 # Multi-select dropdown to choose which tags to show
 tags_to_show = st.multiselect(
