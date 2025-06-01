@@ -37,7 +37,7 @@ floor_bg_images = {
 origin_positions = {
     "Floor 2": (313, 103),
     "Floor 3": (302, 100),
-    "Floor 4": (196, 93)
+    "Floor 4": (311, 93)
 }
 # Pixel coordinates of anchor 2 in image (per floor)
 anchor2_pixel_positions = {
