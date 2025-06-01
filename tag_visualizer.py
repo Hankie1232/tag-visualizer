@@ -52,6 +52,12 @@ anchor2_real_coords = {
     "Floor 3": (16.41, 0.01),
     "Floor 4": (6.1, 6.91)
 }
+# Multi-select dropdown to choose which tags to show
+tags_to_show = st.multiselect(
+    "Select Tags to Show",
+    options=["TAG1", "TAG2", "TAG3"],
+    default=["TAG1", "TAG2", "TAG3"]
+)
 
 # Load image and get size
 bg_img = mpimg.imread(floor_bg_images[floor])
@@ -79,17 +85,6 @@ extent = [
     -origin_y * scale_y,           # bottom boundary
     (height - origin_y) * scale_y  # top boundary
 ]
-
-# Calculate extent to shift the image so anchor aligns to (0,0)
-extent = [-origin_x, width - origin_x, -origin_y, height - origin_y]
-
-
-# Multi-select dropdown to choose which tags to show
-tags_to_show = st.multiselect(
-    "Select Tags to Show",
-    options=["TAG1", "TAG2", "TAG3"],
-    default=["TAG1", "TAG2", "TAG3"]
-)
 
 # Dropdown: Select how many latest positions to show (with 1 included)
 num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100, 500], index=1)
