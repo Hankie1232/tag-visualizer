@@ -37,6 +37,7 @@ floor_bg_images = {
 # Load background image for the selected floor
 bg_img_path = floor_bg_images[floor]
 bg_img = mpimg.imread(bg_img_path)
+bg_img = np.rot90(bg_img, 2)  # rotate 180 degrees for all floors
 
 # Define the extent (coordinate limits) for each floor
 floor_extents = {
