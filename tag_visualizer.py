@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from streamlit_autorefresh import st_autorefresh
+import matplotlib.image as mpimg
 
 # Auto-refresh every 5 seconds (5000 ms)
 st_autorefresh(interval=5000, key="refresh")
@@ -26,6 +27,25 @@ df.columns = df.columns.str.strip()
 for col in ["TIMESTAMP TAG1", "TIMESTAMP TAG2", "TIMESTAMP TAG3"]:
     df[col] = pd.to_datetime(df[col], errors="coerce")
 
+# Map floors to images
+floor_bg_images = {
+    "Floor 2": "FLOOR2.png",
+    "Floor 3": "FLOOR3.png",
+    "Floor 4": "FLOOR4.png"
+}
+
+# Load background image for the selected floor
+bg_img_path = floor_bg_images[floor]
+bg_img = mpimg.imread(bg_img_path)
+
+# Define the extent (coordinate limits) for each floor
+floor_extents = {
+    "Floor 2": [0, 100, 0, 100],
+    "Floor 3": [0, 120, 0, 80],
+    "Floor 4": [0, 90, 0, 110]
+}
+extent = floor_extents[floor]
+
 # Multi-select dropdown to choose which tags to show
 tags_to_show = st.multiselect(
     "Select Tags to Show",
@@ -38,6 +58,9 @@ num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100,
 
 # Plot setup
 fig, ax = plt.subplots()
+ax.imshow(bg_img, extent=extent, origin='lower', zorder=0)
+ax.set_xlim(extent[0], extent[1])
+ax.set_ylim(extent[2], extent[3])
 ax.set_title(f"{floor.upper()} - Tag Positions")
 ax.set_xlabel("X")
 ax.set_ylabel("Y")
