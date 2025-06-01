@@ -27,7 +27,7 @@ for col in ["TIMESTAMP TAG1", "TIMESTAMP TAG2", "TIMESTAMP TAG3"]:
     df[col] = pd.to_datetime(df[col], errors="coerce")
 
 # Multi-select dropdown to choose which tags to show
-tags_to_show = st.sidebar.multiselect(
+tags_to_show = st.multiselect(
     "Select Tags to Show",
     options=["TAG1", "TAG2", "TAG3"],
     default=["TAG1", "TAG2", "TAG3"]
