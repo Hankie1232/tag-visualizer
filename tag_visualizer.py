@@ -35,8 +35,8 @@ def compute_extent_with_two_anchors(floor, width, height):
     ]
 
     # Flip x-axis for Floor 2 by swapping extent limits
-    if floor == "Floor 2":
-        extent[0], extent[1] = extent[1], extent[0]
+    #if floor == "Floor 2":
+        #extent[0], extent[1] = extent[1], extent[0]
 
     return extent
 
