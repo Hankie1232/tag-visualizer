@@ -41,7 +41,7 @@ origin_positions = {
 }
 # Pixel coordinates of anchor 2 in image (per floor)
 anchor2_pixel_positions = {
-    "Floor 2": (397, 125),                                                                                                                    ),
+    "Floor 2": (397, 154                                                                                                                    ),
     "Floor 3": (197, 98),
     "Floor 4": (313, 165)
 }
