@@ -55,6 +55,10 @@ if "TAG3" in tags_to_show:
     tag3_df = df[["TAG3X", "TAG3Y", "TIMESTAMP TAG3"]].dropna().sort_values("TIMESTAMP TAG3", ascending=False).head(num_points)
     ax.scatter(tag3_df["TAG3X"], tag3_df["TAG3Y"], label="TAG3", color="red")
 
+
+# Rotate the grid 180 degrees by inverting axes
+ax.invert_xaxis()
+ax.invert_yaxis()
 ax.legend()
 ax.grid(True)
 st.pyplot(fig)
