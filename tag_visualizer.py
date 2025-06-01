@@ -26,13 +26,15 @@ df.columns = df.columns.str.strip()
 for col in ["TIMESTAMP TAG1", "TIMESTAMP TAG2", "TIMESTAMP TAG3"]:
     df[col] = pd.to_datetime(df[col], errors="coerce")
 
-# Sidebar filters for tags
-show_tag1 = st.sidebar.checkbox("Show TAG1", value=True)
-show_tag2 = st.sidebar.checkbox("Show TAG2", value=True)
-show_tag3 = st.sidebar.checkbox("Show TAG3", value=True)
+# Multi-select dropdown to choose which tags to show
+tags_to_show = st.sidebar.multiselect(
+    "Select Tags to Show",
+    options=["TAG1", "TAG2", "TAG3"],
+    default=["TAG1", "TAG2", "TAG3"]
+)
 
-# Dropdown: How many latest positions to show
-num_points = st.selectbox("Show how many latest positions?", [5, 20, 50, 100], index=2)
+# Dropdown: Select how many latest positions to show (with 1 included)
+num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100], index=1)
 
 # Plot setup
 fig, ax = plt.subplots()
@@ -41,15 +43,15 @@ ax.set_xlabel("X")
 ax.set_ylabel("Y")
 
 # Plot tags with the selected number of latest positions
-if show_tag1:
+if "TAG1" in tags_to_show:
     tag1_df = df[["TAG1 X", "TAG1 Y", "TIMESTAMP TAG1"]].dropna().sort_values("TIMESTAMP TAG1", ascending=False).head(num_points)
     ax.scatter(tag1_df["TAG1 X"], tag1_df["TAG1 Y"], label="TAG1", color="blue")
 
-if show_tag2:
+if "TAG2" in tags_to_show:
     tag2_df = df[["TAG2 X", "TAG2 Y", "TIMESTAMP TAG2"]].dropna().sort_values("TIMESTAMP TAG2", ascending=False).head(num_points)
     ax.scatter(tag2_df["TAG2 X"], tag2_df["TAG2 Y"], label="TAG2", color="green")
 
-if show_tag3:
+if "TAG3" in tags_to_show:
     tag3_df = df[["TAG3X", "TAG3Y", "TIMESTAMP TAG3"]].dropna().sort_values("TIMESTAMP TAG3", ascending=False).head(num_points)
     ax.scatter(tag3_df["TAG3X"], tag3_df["TAG3Y"], label="TAG3", color="red")
 
@@ -57,10 +59,14 @@ ax.legend()
 ax.grid(True)
 st.pyplot(fig)
 
-# Display latest timestamps
+# Display latest timestamps for selected tags only
 st.subheader("Latest Timestamps")
-st.write({
-    "TAG1": df['TIMESTAMP TAG1'].dropna().max(),
-    "TAG2": df['TIMESTAMP TAG2'].dropna().max(),
-    "TAG3": df['TIMESTAMP TAG3'].dropna().max()
-})
+latest_timestamps = {}
+if "TAG1" in tags_to_show:
+    latest_timestamps["TAG1"] = df['TIMESTAMP TAG1'].dropna().max()
+if "TAG2" in tags_to_show:
+    latest_timestamps["TAG2"] = df['TIMESTAMP TAG2'].dropna().max()
+if "TAG3" in tags_to_show:
+    latest_timestamps["TAG3"] = df['TIMESTAMP TAG3'].dropna().max()
+
+st.write(latest_timestamps)
