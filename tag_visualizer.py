@@ -34,19 +34,23 @@ floor_bg_images = {
     "Floor 3": "FLOOR3.png",
     "Floor 4": "FLOOR4.png"
 }
-
-# Load background image for the selected floor
-bg_img_path = floor_bg_images[floor]
-bg_img = mpimg.imread(bg_img_path)
-bg_img = np.rot90(bg_img, 2)  # rotate 180 degrees for all floors
-
-# Define the extent (coordinate limits) for each floor
-floor_extents = {
-    "Floor 2": [-22, 28, -10, 35],
-    "Floor 3": [-22, 28, -10, 35],
-    "Floor 4": [-29, 18, -8, 30] 
+origin_positions = {
+    "Floor 2": (313, 103),
+    "Floor 3": (302, 100),
+    "Floor 4": (196, 93)
 }
-extent = floor_extents[floor]
+# Load image and get size
+bg_img = mpimg.imread(image_paths[floor])
+height, width = bg_img.shape[0], bg_img.shape[1]
+
+# Get the anchor pixel that should be treated as (0,0)
+origin_x, origin_y = origin_positions[floor]
+
+# Calculate extent to shift the image so anchor aligns to (0,0)
+extent = [-origin_x, width - origin_x, -origin_y, height - origin_y]
+
+# Plot the background image
+ax.imshow(bg_img, extent=extent, origin="lower", zorder=0)
 
 # Multi-select dropdown to choose which tags to show
 tags_to_show = st.multiselect(
