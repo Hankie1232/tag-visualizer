@@ -17,8 +17,17 @@ def compute_extent_with_two_anchors(floor, width, height):
     dx_real = rx2_x - rx3_x
     dy_real = rx2_y - rx3_y
 
-    scale_x = dx_real / dx_pixel
-    scale_y = dy_real / dy_pixel
+    # Prevent division by zero
+    if dx_pixel == 0 or dy_pixel == 0:
+        raise ValueError(f"Anchor pixel distance is zero on {floor}.")
+
+    # Flip axes for Floor 2
+    if floor == "Floor 2":
+        scale_x = -dx_real / dx_pixel
+        scale_y = -dy_real / dy_pixel
+    else:
+        scale_x = dx_real / dx_pixel
+        scale_y = dy_real / dy_pixel
 
     origin_x, origin_y = origin_positions[floor]
 
@@ -29,6 +38,7 @@ def compute_extent_with_two_anchors(floor, width, height):
         (height - origin_y) * scale_y
     ]
     return extent
+
 
 
 # Auto-refresh every 5 seconds (5000 ms)
@@ -139,9 +149,7 @@ if "TAG3" in tags_to_show:
     ax.scatter(tag3_df["TAG3X"], tag3_df["TAG3Y"], label="TAG3", color="red")
 
 
-# Rotate the grid 180 degrees by inverting axes
-ax.invert_xaxis()
-ax.invert_yaxis()
+
 ax.legend()
 ax.grid(True)
 st.pyplot(fig)
