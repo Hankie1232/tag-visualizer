@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from streamlit_autorefresh import st_autorefresh
 import matplotlib.image as mpimg
 import numpy as np
+
 def compute_extent_with_two_anchors(floor, width, height):
     px2_x, px2_y = anchor2_pixel_positions[floor]
     rx2_x, rx2_y = anchor2_real_coords[floor]
@@ -21,13 +22,8 @@ def compute_extent_with_two_anchors(floor, width, height):
     if dx_pixel == 0 or dy_pixel == 0:
         raise ValueError(f"Anchor pixel distance is zero on {floor}.")
 
-    # Flip axes for Floor 2
-    if floor == "Floor 2":
-        scale_x = -dx_real / dx_pixel
-        scale_y = -dy_real / dy_pixel
-    else:
-        scale_x = dx_real / dx_pixel
-        scale_y = dy_real / dy_pixel
+    scale_x = dx_real / dx_pixel
+    scale_y = dy_real / dy_pixel
 
     origin_x, origin_y = origin_positions[floor]
 
@@ -37,8 +33,12 @@ def compute_extent_with_two_anchors(floor, width, height):
         -origin_y * scale_y,
         (height - origin_y) * scale_y
     ]
-    return extent
 
+    # Flip x-axis for Floor 2 by swapping extent limits
+    if floor == "Floor 2":
+        extent[0], extent[1] = extent[1], extent[0]
+
+    return extent
 
 
 # Auto-refresh every 5 seconds (5000 ms)
@@ -97,6 +97,7 @@ anchor3_real_coords = {
     "Floor 2": (-11.3, 17.02),
     "Floor 3": (-10.2, 0.02)
 }
+
 # Multi-select dropdown to choose which tags to show
 tags_to_show = st.multiselect(
     "Select Tags to Show",
@@ -122,12 +123,10 @@ else:  # Floor 4 (already good)
         (height - origin_y) * scale_y
     ]
 
-# Dropdown: Select how many latest positions to show (with 1 included)
-num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100, 500], index=1)
-
 # Plot setup
 fig, ax = plt.subplots()
-ax.invert_xaxis()
+
+# Removed ax.invert_xaxis() because flipping extent does the job now
 ax.imshow(bg_img, extent=extent, origin="lower", zorder=0)
 ax.set_xlim(extent[0], extent[1])
 ax.set_ylim(extent[2], extent[3])
@@ -136,6 +135,8 @@ ax.set_xlabel("X")
 ax.set_ylabel("Y")
 
 # Plot tags with the selected number of latest positions
+num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100, 500], index=1)
+
 if "TAG1" in tags_to_show:
     tag1_df = df[["TAG1 X", "TAG1 Y", "TIMESTAMP TAG1"]].dropna().sort_values("TIMESTAMP TAG1", ascending=False).head(num_points)
     ax.scatter(tag1_df["TAG1 X"], tag1_df["TAG1 Y"], label="TAG1", color="blue")
@@ -147,8 +148,6 @@ if "TAG2" in tags_to_show:
 if "TAG3" in tags_to_show:
     tag3_df = df[["TAG3X", "TAG3Y", "TIMESTAMP TAG3"]].dropna().sort_values("TIMESTAMP TAG3", ascending=False).head(num_points)
     ax.scatter(tag3_df["TAG3X"], tag3_df["TAG3Y"], label="TAG3", color="red")
-
-
 
 ax.legend()
 ax.grid(True)
