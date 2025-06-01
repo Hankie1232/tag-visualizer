@@ -39,12 +39,46 @@ origin_positions = {
     "Floor 3": (302, 100),
     "Floor 4": (196, 93)
 }
+# Pixel coordinates of anchor 2 in image (per floor)
+anchor2_pixel_positions = {
+    "Floor 2": (116, 223),
+    "Floor 3": (197, 98),
+    "Floor 4": (110, 170)
+}
+
+# Real-world coordinates of anchor 2 on the grid (per floor)
+anchor2_real_coords = {
+    "Floor 2": (15.02, 14.97),
+    "Floor 3": (16.41, 0.01),
+    "Floor 4": (6.1, 6.91)
+}
+
 # Load image and get size
 bg_img = mpimg.imread(floor_bg_images[floor])
 height, width = bg_img.shape[0], bg_img.shape[1]
 
 # Get the anchor pixel that should be treated as (0,0)
 origin_x, origin_y = origin_positions[floor]
+
+# Get second anchor pixel and real coords
+pixel_x2, pixel_y2 = anchor2_pixel_positions[floor]
+real_x2, real_y2 = anchor2_real_coords[floor]
+
+# Calculate pixel differences (relative to origin)
+delta_px_x = pixel_x2 - origin_x
+delta_px_y = pixel_y2 - origin_y
+
+# Calculate scale factors (real distance / pixel distance)
+scale_x = real_x2 / delta_px_x
+scale_y = real_y2 / delta_px_y
+
+# Calculate scaled extent for imshow to align grid and image
+extent = [
+    -origin_x * scale_x,           # left boundary
+    (width - origin_x) * scale_x,  # right boundary
+    -origin_y * scale_y,           # bottom boundary
+    (height - origin_y) * scale_y  # top boundary
+]
 
 # Calculate extent to shift the image so anchor aligns to (0,0)
 extent = [-origin_x, width - origin_x, -origin_y, height - origin_y]
