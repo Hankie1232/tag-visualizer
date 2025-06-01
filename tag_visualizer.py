@@ -43,7 +43,7 @@ origin_positions = {
 anchor2_pixel_positions = {
     "Floor 2": (116, 223),
     "Floor 3": (197, 98),
-    "Floor 4": (332, 165)
+    "Floor 4": (325, 165)
 }
 
 # Real-world coordinates of anchor 2 on the grid (per floor)
