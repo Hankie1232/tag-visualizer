@@ -60,24 +60,24 @@ floor_bg_images = {
     "Floor 3": "FLOOR3.png",
     "Floor 4": "FLOOR4.png"
 }
-# Pixel coordinates of anchor origin in image (per floor)
+# Pixel coordinates of anchor 2 in image (per floor)
 origin_positions = {
-    "Floor 2": (200, 45),
-    "Floor 3": (302, 100),
-    "Floor 4": (235, 89)
+    "Floor 2": (510, 240),
+    "Floor 3": (497 , 240),
+    "Floor 4": (713, 214)
 }
 # Pixel coordinates of anchor 2 in image (per floor)
 anchor2_pixel_positions = {
-    "Floor 2": (397, 154                                                                                                                    ),
-    "Floor 3": (197, 98),
-    "Floor 4": (313, 165)
+    "Floor 2": (282, 522                                                                                                                    ),
+    "Floor 3": (263, 560),
+    "Floor 4": (248, 390)
 }
 
 # Real-world coordinates of anchor 2 on the grid (per floor)
 anchor2_real_coords = {
-    "Floor 2": (15.02, 14.97),
-    "Floor 3": (16.41, 0.01),
-    "Floor 4": (12.12, 6.91)
+    "Floor 2": (-11.3, 14.97),
+    "Floor 3": (-11.4, 14.62),
+    "Floor 4": (-17.9, 6.96)
 }
 # Multi-select dropdown to choose which tags to show
 tags_to_show = st.multiselect(
@@ -89,7 +89,7 @@ tags_to_show = st.multiselect(
 # Load image and get size
 bg_img = mpimg.imread(floor_bg_images[floor])
 height, width = bg_img.shape[0], bg_img.shape[1]
-#bg_img = np.fliplr(bg_img)  # This flips the image left-to-right
+#                                                                                                           bg_img = np.fliplr(bg_img)  # This flips the image left-to-right
 
 # Get the anchor pixel that should be treated as (0,0)
 origin_x, origin_y = origin_positions[floor]
@@ -113,21 +113,15 @@ extent = [
     -origin_y * scale_y,           # bottom boundary
     (height - origin_y) * scale_y  # top boundary
 ]
-# Calculate center of the extent for 180-degree rotation
-center_x = (extent[0] + extent[1]) / 2
-center_y = (extent[2] + extent[3]) / 2
 
-# Function to rotate any X, Y point 180 degrees around the center
-def rotate_180(x, y):
-    return 2 * center_x - x, 2 * center_y - y
-    return 2 * center_x - x, 2 * center_y - y
 # Dropdown: Select how many latest positions to show (with 1 included)
-num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100, 500], index=1)
+num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100, 500, "All"], index=1)
+
 
 # Plot setup
 fig, ax = plt.subplots()
 # Plot the background image
-ax.imshow(bg_img, extent=extent, origin="upper", zorder=0)
+ax.imshow(bg_img, extent=extent, origin="lower", zorder=0)
 ax.set_xlim(extent[0], extent[1])
 ax.set_ylim(extent[2], extent[3])
 ax.set_title(f"{floor.upper()} - Tag Positions")
@@ -136,28 +130,28 @@ ax.set_ylabel("Y")
 
 # Plot tags with the selected number of latest positions
 if "TAG1" in tags_to_show:
-    tag1_df = df[["TAG1 X", "TAG1 Y", "TIMESTAMP TAG1"]].dropna().sort_values("TIMESTAMP TAG1", ascending=False).head(num_points)
-    x1_rot, y1_rot = rotate_180(tag1_df["TAG1 X"], tag1_df["TAG1 Y"])
-    ax.scatter(x1_rot, y1_rot, label="TAG1", color="blue")
-
-    
+    tag1_df = df[["TAG1 X", "TAG1 Y", "TIMESTAMP TAG1"]].dropna()
+    if num_points != "All":
+        tag1_df = tag1_df.sort_values("TIMESTAMP TAG1", ascending=False).head(num_points)
+    ax.scatter(tag1_df["TAG1 X"], tag1_df["TAG1 Y"], label="TAG1", color="blue")
 
 if "TAG2" in tags_to_show:
-    tag2_df = df[["TAG2 X", "TAG2 Y", "TIMESTAMP TAG2"]].dropna().sort_values("TIMESTAMP TAG2", ascending=False).head(num_points)
-    x2_rot, y2_rot = rotate_180(tag2_df["TAG2 X"], tag2_df["TAG2 Y"])
-    ax.scatter(x2_rot, y2_rot, label="TAG2", color="green")
-
+    tag2_df = df[["TAG2 X", "TAG2 Y", "TIMESTAMP TAG2"]].dropna()
+    if num_points != "All":
+        tag2_df = tag2_df.sort_values("TIMESTAMP TAG2", ascending=False).head(num_points)
+    ax.scatter(tag2_df["TAG2 X"], tag2_df["TAG2 Y"], label="TAG2", color="green")
 
 if "TAG3" in tags_to_show:
-    tag3_df = df[["TAG3X", "TAG3Y", "TIMESTAMP TAG3"]].dropna().sort_values("TIMESTAMP TAG3", ascending=False).head(num_points)
-    x3_rot, y3_rot = rotate_180(tag3_df["TAG3X"], tag3_df["TAG3Y"])
-    ax.scatter(x3_rot, y3_rot, label="TAG3", color="red")
+    tag3_df = df[["TAG3X", "TAG3Y", "TIMESTAMP TAG3"]].dropna()
+    if num_points != "All":
+        tag3_df = tag3_df.sort_values("TIMESTAMP TAG3", ascending=False).head(num_points)
+    ax.scatter(tag3_df["TAG3X"], tag3_df["TAG3Y"], label="TAG3", color="red")
 
 
 
 # Rotate the grid 180 degrees by inverting axes
-#ax.invert_xaxis()
-#ax.invert_yaxis()
+ax.invert_xaxis()
+ax.invert_yaxis()
 ax.legend()
 ax.grid(True)
 st.pyplot(fig)
