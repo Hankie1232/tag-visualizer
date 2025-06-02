@@ -60,6 +60,7 @@ floor_bg_images = {
     "Floor 3": "FLOOR3.png",
     "Floor 4": "FLOOR4.png"
 }
+# Pixel coordinates of anchor origin in image (per floor)
 origin_positions = {
     "Floor 2": (200, 45),
     "Floor 3": (302, 100),
@@ -88,7 +89,7 @@ tags_to_show = st.multiselect(
 # Load image and get size
 bg_img = mpimg.imread(floor_bg_images[floor])
 height, width = bg_img.shape[0], bg_img.shape[1]
-bg_img = np.fliplr(bg_img)  # This flips the image left-to-right
+#bg_img = np.fliplr(bg_img)  # This flips the image left-to-right
 
 # Get the anchor pixel that should be treated as (0,0)
 origin_x, origin_y = origin_positions[floor]
@@ -141,8 +142,8 @@ if "TAG3" in tags_to_show:
 
 
 # Rotate the grid 180 degrees by inverting axes
-ax.invert_xaxis()
-ax.invert_yaxis()
+#ax.invert_xaxis()
+#ax.invert_yaxis()
 ax.legend()
 ax.grid(True)
 st.pyplot(fig)
