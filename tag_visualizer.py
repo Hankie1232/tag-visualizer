@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from streamlit_autorefresh import st_autorefresh
 import matplotlib.image as mpimg
 import numpy as np
-
 def compute_extent_with_two_anchors(floor, width, height):
     px2_x, px2_y = anchor2_pixel_positions[floor]
     rx2_x, rx2_y = anchor2_real_coords[floor]
@@ -18,10 +17,6 @@ def compute_extent_with_two_anchors(floor, width, height):
     dx_real = rx2_x - rx3_x
     dy_real = rx2_y - rx3_y
 
-    # Prevent division by zero
-    if dx_pixel == 0 or dy_pixel == 0:
-        raise ValueError(f"Anchor pixel distance is zero on {floor}.")
-
     scale_x = dx_real / dx_pixel
     scale_y = dy_real / dy_pixel
 
@@ -33,11 +28,6 @@ def compute_extent_with_two_anchors(floor, width, height):
         -origin_y * scale_y,
         (height - origin_y) * scale_y
     ]
-
-    # Flip x-axis for Floor 2 by swapping extent limits
-    #if floor == "Floor 2":
-        #extent[0], extent[1] = extent[1], extent[0]
-
     return extent
 
 
@@ -72,32 +62,22 @@ floor_bg_images = {
 }
 origin_positions = {
     "Floor 2": (200, 45),
-    "Floor 3": (206, 99),
+    "Floor 3": (302, 100),
     "Floor 4": (235, 89)
 }
-
+# Pixel coordinates of anchor 2 in image (per floor)
 anchor2_pixel_positions = {
-    "Floor 2": (397, 154),
-    "Floor 3": (312, 99),
+    "Floor 2": (397, 154                                                                                                                    ),
+    "Floor 3": (197, 98),
     "Floor 4": (313, 165)
 }
 
+# Real-world coordinates of anchor 2 on the grid (per floor)
 anchor2_real_coords = {
     "Floor 2": (15.02, 14.97),
     "Floor 3": (16.41, 0.01),
     "Floor 4": (12.12, 6.91)
 }
-
-anchor3_pixel_positions = {
-    "Floor 2": (101, 125),
-    "Floor 3": (117, 101)
-}
-
-anchor3_real_coords = {
-    "Floor 2": (-11.3, 17.02),
-    "Floor 3": (-10.2, 0.02)
-}
-
 # Multi-select dropdown to choose which tags to show
 tags_to_show = st.multiselect(
     "Select Tags to Show",
@@ -107,26 +87,38 @@ tags_to_show = st.multiselect(
 
 # Load image and get size
 bg_img = mpimg.imread(floor_bg_images[floor])
-height, width = bg_img.shape[:2]
+height, width = bg_img.shape[0], bg_img.shape[1]
+bg_img = np.fliplr(bg_img)  # This flips the image left-to-right
 
-# Calculate extent using two-anchor alignment
-if floor in ["Floor 2", "Floor 3"]:
-    extent = compute_extent_with_two_anchors(floor, width, height)
-else:  # Floor 4 (already good)
-    origin_x, origin_y = origin_positions[floor]
-    scale_x = 1  # assuming correct manually
-    scale_y = 1
-    extent = [
-        -origin_x * scale_x,
-        (width - origin_x) * scale_x,
-        -origin_y * scale_y,
-        (height - origin_y) * scale_y
-    ]
+# Get the anchor pixel that should be treated as (0,0)
+origin_x, origin_y = origin_positions[floor]
+
+# Get second anchor pixel and real coords
+pixel_x2, pixel_y2 = anchor2_pixel_positions[floor]
+real_x2, real_y2 = anchor2_real_coords[floor]
+
+# Calculate pixel differences (relative to origin)
+delta_px_x = pixel_x2 - origin_x
+delta_px_y = pixel_y2 - origin_y
+
+# Calculate scale factors (real distance / pixel distance)
+scale_x = real_x2 / delta_px_x
+scale_y = real_y2 / delta_px_y
+
+# Calculate scaled extent for imshow to align grid and image
+extent = [
+    -origin_x * scale_x,           # left boundary
+    (width - origin_x) * scale_x,  # right boundary
+    -origin_y * scale_y,           # bottom boundary
+    (height - origin_y) * scale_y  # top boundary
+]
+
+# Dropdown: Select how many latest positions to show (with 1 included)
+num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100, 500], index=1)
 
 # Plot setup
 fig, ax = plt.subplots()
-
-# Removed ax.invert_xaxis() because flipping extent does the job now
+# Plot the background image
 ax.imshow(bg_img, extent=extent, origin="lower", zorder=0)
 ax.set_xlim(extent[0], extent[1])
 ax.set_ylim(extent[2], extent[3])
@@ -135,8 +127,6 @@ ax.set_xlabel("X")
 ax.set_ylabel("Y")
 
 # Plot tags with the selected number of latest positions
-num_points = st.selectbox("Show how many latest positions?", [1, 5, 20, 50, 100, 500], index=1)
-
 if "TAG1" in tags_to_show:
     tag1_df = df[["TAG1 X", "TAG1 Y", "TIMESTAMP TAG1"]].dropna().sort_values("TIMESTAMP TAG1", ascending=False).head(num_points)
     ax.scatter(tag1_df["TAG1 X"], tag1_df["TAG1 Y"], label="TAG1", color="blue")
@@ -149,6 +139,10 @@ if "TAG3" in tags_to_show:
     tag3_df = df[["TAG3X", "TAG3Y", "TIMESTAMP TAG3"]].dropna().sort_values("TIMESTAMP TAG3", ascending=False).head(num_points)
     ax.scatter(tag3_df["TAG3X"], tag3_df["TAG3Y"], label="TAG3", color="red")
 
+
+# Rotate the grid 180 degrees by inverting axes
+ax.invert_xaxis()
+ax.invert_yaxis()
 ax.legend()
 ax.grid(True)
 st.pyplot(fig)
